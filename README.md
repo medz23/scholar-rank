@@ -1,4 +1,4 @@
-# PCLP Exam IDE
+# Python Exam IDE
 
 A web-based exam platform for programming courses. Students solve Python problems in a browser-based IDE with Monaco editor, and their code is graded automatically inside sandboxed Docker containers.
 
