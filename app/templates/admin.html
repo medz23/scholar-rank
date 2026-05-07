@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Professor Dashboard | PCLP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="container-fluid py-5 px-4" style="max-width: 1400px;">
+	<div class="d-flex justify-content-between align-items-center mb-5 pb-3 border-bottom">
+		<h2 class="text-success fw-bold m-0 d-flex align-items-center">
+			Professor Dashboard
+		</h2>
+		<a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger px-4 fw-bold shadow-sm">Logout</a>
+	</div>
+
+	<div class="row g-4 mb-5">
+		<div class="col-md-4">
+			<div class="card h-100 border-success border-opacity-25">
+				<div class="card-header text-success fw-bold bg-success bg-opacity-10">
+					+ Add New Group
+				</div>
+				<div class="card-body p-4 d-flex flex-column justify-content-center">
+					<form action="{{ url_for('group.add_group') }}" method="POST" class="d-flex flex-column gap-3">
+						<input type="text" name="name" class="form-control bg-light" placeholder="Group Name (e.g., 512A)"
+									 required>
+						<button type="submit" class="btn btn-success fw-bold">Create Group</button>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-4">
+			<div class="card h-100 border border-warning border-opacity-50">
+				<div class="card-header text-dark fw-bold bg-warning bg-opacity-10">
+					Bonus
+				</div>
+				<div class="card-body p-4 d-flex flex-column justify-content-center">
+					<p class="text-muted small mb-3">This value is added to every student's final calculated grade.</p>
+					<form action="{{ url_for('admin.update_global_bonus') }}" method="POST" class="d-flex gap-2">
+						<input type="number" step="0.1" name="global_bonus"
+									 class="form-control form-control-lg text-center fw-bold bg-light" value="{{ settings.global_bonus }}"
+									 required>
+						<button type="submit" class="btn btn-warning fw-bold px-4">Apply</button>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-4">
+			<div class="card h-100">
+				<div class="card-header fw-bold text-dark">Problem ID Reference</div>
+				<div class="card-body p-0 overflow-auto" style="max-height: 200px;">
+					<table class="table table-hover table-borderless mb-0 align-middle">
+						<thead class="table-light">
+						<tr>
+							<th class="ps-4 py-3">Set</th>
+							<th class="py-3">ID</th>
+							<th class="py-3">Title</th>
+						</tr>
+						</thead>
+						<tbody>
+						{% for prob in problems %}
+						<tr>
+							<td class="ps-4 fw-bold text-secondary">Q{{ prob.exam_order }}</td>
+							<td class="text-primary fw-bold">#{{ prob.id }}</td>
+							<td>{{ prob.title }}</td>
+						</tr>
+						{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="card mb-5 border-info border-opacity-25">
+		<div class="card-header fw-bold text-info bg-info bg-opacity-10">
+			Test Case Format Guide
+		</div>
+		<div class="card-body p-4">
+			<div class="row g-4">
+				<div class="col-md-6">
+					<h6 class="fw-bold text-dark">Function Mode <span class="badge bg-primary">when Function Name is set</span>
+					</h6>
+					<p class="text-muted small mb-2">The grader calls your function with the parsed JSON input and compares the
+						return value against the expected output using smart JSON comparison.</p>
+					<table class="table table-sm table-bordered font-monospace small">
+						<thead class="table-light">
+						<tr>
+							<th>Input</th>
+							<th>Expected Output</th>
+							<th>What happens</th>
+						</tr>
+						</thead>
+						<tbody>
+						<tr>
+							<td>{"nums": [2,7,11], "target": 9}</td>
+							<td>[0, 1]</td>
+							<td>fn(nums=[2,7,11], target=9)</td>
+						</tr>
+						<tr>
+							<td>[[1,2,3], 3]</td>
+							<td>2</td>
+							<td>fn([1,2,3], 3)</td>
+						</tr>
+						<tr>
+							<td>["hello world"]</td>
+							<td>"dlrow olleh"</td>
+							<td>fn("hello world")</td>
+						</tr>
+						<tr>
+							<td>[[3,1,2]]</td>
+							<td>[1, 2, 3]</td>
+							<td>fn([3,1,2]) — single list arg</td>
+						</tr>
+						<tr>
+							<td>[5]</td>
+							<td>120</td>
+							<td>fn(5) — single value</td>
+						</tr>
+						<tr>
+							<td>{"head": [1,2,4], "node": [1,3,4]}</td>
+							<td>[1, 1, 2, 3, 4, 4]</td>
+							<td>fn(head=[1,2,4], node=[1,3,4])</td>
+						</tr>
+						</tbody>
+					</table>
+					<div class="alert alert-light border small py-2 mb-0">
+						<strong>Comparison rules:</strong> Return values are compared via JSON normalization. <code>[1,2,3]</code>
+						matches <code>[1, 2, 3]</code>. Booleans: Python <code>True</code> matches <code>true</code>. Strings must
+						be quoted in expected output: <code>"hello"</code>.
+					</div>
+				</div>
+				<div class="col-md-6">
+					<h6 class="fw-bold text-dark">Stdin Mode <span class="badge bg-secondary">when Function Name is empty</span>
+					</h6>
+					<p class="text-muted small mb-2">The grader runs the script, feeds input via stdin, and compares stdout
+						line-by-line (stripped).</p>
+					<table class="table table-sm table-bordered font-monospace small">
+						<thead class="table-light">
+						<tr>
+							<th>Input (stdin)</th>
+							<th>Expected Output (stdout)</th>
+						</tr>
+						</thead>
+						<tbody>
+						<tr>
+							<td>5<br>3 1 4 1 5</td>
+							<td>1 1 3 4 5</td>
+						</tr>
+						<tr>
+							<td>hello</td>
+							<td>olleh</td>
+						</tr>
+						<tr>
+							<td>3<br>1<br>2<br>3</td>
+							<td>6</td>
+						</tr>
+						</tbody>
+					</table>
+					<div class="alert alert-light border small py-2 mb-0">
+						<strong>Comparison rules:</strong> Exact string match after stripping leading/trailing whitespace. Multiline
+						outputs must match line-by-line. Use textareas in the test form for multiline input/output.
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<h3 class="mb-4 text-dark fw-bold mt-5">Class Groups</h3>
+	<div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+		{% for group in groups %}
+		<div class="col">
+			<div class="card h-100 shadow-sm border-0 bg-white">
+				<div class="card-header bg-primary fw-bold d-flex justify-content-between align-items-center rounded-top">
+					{{ group.name }}
+					<span class="badge bg-light text-primary rounded-pill">{{ group.students|length }} Students</span>
+				</div>
+				<div class="card-body text-center p-4">
+					<a href="{{ url_for('group.group_page', group_id=group.id) }}"
+						 class="btn btn-outline-primary fw-bold w-100 mb-3">
+						View & Manage Students
+					</a>
+					<form action="{{ url_for('group.delete_group', group_id=group.id) }}" method="POST"
+								onsubmit="return confirm('Delete this group and all its students?');">
+						<button type="submit" class="btn btn-sm btn-danger w-100 text-uppercase fw-bold" style="font-size: 0.8rem;">
+							Delete Group
+						</button>
+					</form>
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+
+	<h3 class="mb-4 text-dark fw-bold">Problems Database</h3>
+	<div class="card mb-5 p-2">
+		<div class="card-header text-primary fw-bold fs-5">Create New Problem</div>
+		<div class="card-body p-4">
+			<form action="{{ url_for('admin.add_problem') }}" method="POST">
+				<div class="row g-3 mb-3">
+					<div class="col-md-2"><input type="number" name="exam_order" class="form-control form-control-lg bg-light"
+																			 placeholder="Set / Q#" required></div>
+					<div class="col-md-8"><input type="text" name="title" class="form-control form-control-lg bg-light"
+																			 placeholder="Problem Title" required></div>
+					<div class="col-md-2"><input type="number" step="0.1" name="weight"
+																			 class="form-control form-control-lg bg-light" placeholder="Total Wt."
+																			 required></div>
+				</div>
+				<div class="mb-4">
+    <textarea name="description" class="form-control markdown-editor"
+							placeholder="Problem Description (Markdown supported)..."></textarea>
+				</div>
+				<div class="mb-3">
+					<label class="form-label fw-bold">Start Code (Template for students)</label>
+					<textarea name="start_code" class="form-control font-monospace" rows="4"
+										placeholder="def solution():\n    pass"></textarea>
+				</div>
+				<div class="mb-3">
+					<label class="form-label fw-bold">Function Name <small class="text-muted fw-normal">(optional — if set, the
+						grader calls this function with parsed JSON input; if blank, the script runs with stdin)</small></label>
+					<input type="text" name="function_name" class="form-control font-monospace bg-light"
+								 placeholder="e.g. mergeTwoLists">
+				</div>
+				<button type="submit" class="btn btn-primary btn-lg w-100 fw-bold shadow-sm">Save</button>
+			</form>
+		</div>
+	</div>
+
+	{% for prob in problems|sort(attribute='exam_order') %}
+	<div class="problem-item">
+		<div class="d-flex justify-content-between align-items-center mb-3">
+			<h4 class="text-dark m-0 fw-bold d-flex align-items-center">
+				<span class="badge bg-primary me-3 fs-5">Q{{ prob.exam_order }}</span>
+				{{ prob.title }}
+				<span class="badge bg-light text-secondary border ms-3 fs-6 fw-normal">Weight: {{ prob.weight }} pts</span>
+				{% if prob.function_name %}
+				<span class="badge bg-success ms-2 fs-6 fw-normal">fn: {{ prob.function_name }}()</span>
+				{% else %}
+				<span class="badge bg-secondary ms-2 fs-6 fw-normal">stdin/stdout</span>
+				{% endif %}
+			</h4>
+			<form action="{{ url_for('admin.delete_problem', problem_id=prob.id) }}" method="POST" style="display:inline;"
+						onsubmit="return confirm('Delete this problem?');">
+				<button type="submit" class="btn btn-outline-danger fw-bold">Delete</button>
+			</form>
+		</div>
+
+		<p class="text-muted small fw-bold mb-4">DATABASE ID: #{{ prob.id }}</p>
+
+		<details class="mb-4">
+			<summary class="btn btn-light border fw-bold text-secondary mb-3 shadow-sm">Edit Problem Details</summary>
+			<form action="{{ url_for('admin.edit_problem', problem_id=prob.id) }}" method="POST"
+						class="card card-body bg-light border-0 mt-2 p-4">
+				<div class="row g-3 mb-3">
+					<div class="col-md-2"><input type="number" name="exam_order" value="{{ prob.exam_order }}"
+																			 class="form-control bg-white" required></div>
+					<div class="col-md-7"><input type="text" name="title" value="{{ prob.title }}"
+																			 class="form-control bg-white" required></div>
+					<div class="col-md-3"><input type="number" step="0.1" name="weight" value="{{ prob.weight }}"
+																			 class="form-control bg-white" placeholder="Weight" required></div>
+				</div>
+				<textarea name="description" class="form-control markdown-editor" required>{{ prob.description }}</textarea>
+				<div class="mb-3">
+					<label class="form-label fw-bold">Start Code (Template)</label>
+					<textarea name="start_code" class="form-control font-monospace" rows="5"
+										placeholder="def solution():&#10;    pass">{{ prob.start_code }}</textarea>
+				</div>
+				<div class="mb-3">
+					<label class="form-label fw-bold">Function Name <small class="text-muted fw-normal">(optional)</small></label>
+					<input type="text" name="function_name" class="form-control font-monospace bg-white"
+								 value="{{ prob.function_name or '' }}" placeholder="e.g. mergeTwoLists">
+				</div>
+				<button type="submit" class="btn btn-success mt-3 fw-bold w-auto px-5 shadow-sm">Save Changes</button>
+			</form>
+		</details>
+
+		<h6 class="fw-bold mt-4 mb-3 text-dark">Test Cases ({{ prob.test_cases|length }})</h6>
+		<ul class="list-group mb-4 shadow-sm border rounded">
+			{% for test in prob.test_cases %}
+			<li class="list-group-item p-3">
+				<div class="d-flex justify-content-between align-items-start">
+					<div class="font-monospace text-dark flex-grow-1" style="font-size: 13px;">
+						<div class="mb-1"><strong>Input:</strong> <code class="bg-light px-2 py-1 rounded">{{ test.input_data
+							}}</code></div>
+						<div class="mb-1"><strong>Expected:</strong> <code class="bg-light px-2 py-1 rounded">{{
+							test.expected_output }}</code></div>
+						<div>
+							<strong>Weight:</strong> {{ test.weight }} pts
+							{% if test.is_hidden %}<span class="badge bg-dark ms-2">Hidden</span>{% endif %}
+						</div>
+					</div>
+					<form action="{{ url_for('admin.delete_test', test_id=test.id) }}" method="POST" style="display:inline;"
+								onsubmit="return confirm('Delete this test case?');">
+						<button type="submit" class="btn btn-link text-danger text-decoration-none fw-bold fs-5 px-2 p-0">✖</button>
+					</form>
+				</div>
+			</li>
+			{% endfor %}
+		</ul>
+
+		<details class="mb-3">
+			<summary class="btn btn-outline-secondary btn-sm fw-bold mb-2">Add Test Case</summary>
+			<form action="{{ url_for('admin.add_test', problem_id=prob.id) }}" method="POST"
+						class="card card-body bg-light border-0 mt-2 p-4">
+				<div class="row g-3 mb-3">
+					<div class="col-md-6">
+						<label class="form-label fw-bold small">Input
+							{% if prob.function_name %}
+							<span
+									class="text-muted fw-normal">— JSON: <code>{{ '{"param1": value, "param2": value}' }}</code> or <code>[arg1, arg2]</code></span>
+							{% else %}
+							<span class="text-muted fw-normal">— raw text fed to stdin</span>
+							{% endif %}
+						</label>
+						<textarea name="input_data" class="form-control font-monospace" rows="3"
+											placeholder='{% if prob.function_name %}{"nums": [2,7,11,15], "target": 9}{% else %}5&#10;3 1 4 1 5{% endif %}'
+											required></textarea>
+					</div>
+					<div class="col-md-6">
+						<label class="form-label fw-bold small">Expected Output
+							{% if prob.function_name %}
+							<span class="text-muted fw-normal">— JSON value returned by function</span>
+							{% else %}
+							<span class="text-muted fw-normal">— exact stdout text</span>
+							{% endif %}
+						</label>
+						<textarea name="expected_output" class="form-control font-monospace" rows="3"
+											placeholder='{% if prob.function_name %}[0, 1]{% else %}1 1 3 4 5{% endif %}' required></textarea>
+					</div>
+				</div>
+				<div class="row g-3 align-items-center">
+					<div class="col-md-3">
+						<label class="form-label fw-bold small">Points</label>
+						<input type="number" step="0.1" name="weight" class="form-control" placeholder="10" required>
+					</div>
+					<div class="col-md-4 pt-4">
+						<div class="form-check">
+							<input class="form-check-input" type="checkbox" name="is_hidden" id="hidden_{{ prob.id }}">
+							<label class="form-check-label small" for="hidden_{{ prob.id }}">
+								<strong>Hidden test</strong> — input/output not shown to student on failure
+							</label>
+						</div>
+					</div>
+					<div class="col-md-5 pt-4 text-end">
+						<button type="submit" class="btn btn-primary fw-bold px-4">Add Test Case</button>
+					</div>
+				</div>
+			</form>
+		</details>
+	</div>
+	{% endfor %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+<script>
+    const mdeInstances = new Map();
+    document.querySelectorAll('.markdown-editor').forEach(function(textarea) {
+        const mde = new EasyMDE({
+            element: textarea,
+            spellChecker: false,
+            status: false,
+            minHeight: "150px",
+            placeholder: "Use Markdown..."
+        });
+        mdeInstances.set(textarea, mde);
+    });
+
+    document.querySelectorAll('details').forEach(detail => {
+        detail.addEventListener('toggle', function() {
+            if(this.open) { window.dispatchEvent(new Event('resize')); }
+        });
+    });
+
+    function ajaxSubmit(form, successMsg) {
+        mdeInstances.forEach((mde, textarea) => {
+            if (form.contains(textarea)) {
+                textarea.value = mde.value();
+            }
+        });
+
+        const formData = new FormData(form);
+        const btn = form.querySelector('button[type="submit"]');
+        const origText = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = 'Saving...';
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+        })
+        .then(res => {
+            if (res.redirected || res.ok) {
+                btn.textContent = '✓ ' + successMsg;
+                btn.classList.remove('btn-primary', 'btn-success');
+                btn.classList.add('btn-success');
+                setTimeout(() => location.reload(), 600);
+            } else {
+                throw new Error('Server returned ' + res.status);
+            }
+        })
+        .catch(err => {
+            alert('Error: ' + err.message);
+            btn.disabled = false;
+            btn.textContent = origText;
+        });
+    }
+
+    document.querySelectorAll('form[action*="add_test"]').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            ajaxSubmit(this, 'Test Added!');
+        });
+    });
+
+    document.querySelectorAll('form[action*="add_problem"]').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            ajaxSubmit(this, 'Problem Created!');
+        });
+    });
+
+    document.querySelectorAll('form[action*="edit_problem"]').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            ajaxSubmit(this, 'Saved!');
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Login | PCLP</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="d-flex align-items-center justify-content-center vh-100">
+
+<div class="card p-5" style="width: 100%; max-width: 420px;">
+	<div class="text-center mb-4 pb-2">
+		<h2 class="text-success fw-bold m-0">&lt;/&gt; PCLP</h2>
+		<p class="text-muted mt-2">Sign in to access your exam portal</p>
+	</div>
+
+	<form action="{{ url_for('auth.login') }}" method="POST">
+		{% if error %}
+		<div class="alert alert-danger py-2 small fw-bold">{{ error }}</div>
+		{% endif %}
+		<div class="mb-3">
+			<label class="form-label text-muted small fw-bold" style="letter-spacing: 1px;">USERNAME</label>
+			<input type="text" name="username" class="form-control form-control-lg bg-light border-0"
+						 placeholder="Enter your username" required autofocus>
+		</div>
+		<div class="mb-4">
+			<label class="form-label text-muted small fw-bold" style="letter-spacing: 1px;">PASSWORD</label>
+			<input type="password" name="password" class="form-control form-control-lg bg-light border-0"
+						 placeholder="Enter your password" required>
+		</div>
+		<button type="submit" class="btn btn-success btn-lg w-100 fw-bold shadow-sm">Login to Portal</button>
+	</form>
+</div>
+
+</body>
+</html>

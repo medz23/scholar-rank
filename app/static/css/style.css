@@ -1,0 +1,124 @@
+body {
+	font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+	background-color: #f4f6f8;
+	color: #333d4b;
+	overflow-x: hidden;
+}
+
+.card {
+	border: none !important;
+	border-radius: 12px;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+	background-color: #ffffff;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+.card-header {
+	background-color: transparent !important;
+	border-bottom: 1px solid #f1f3f5 !important;
+	padding: 15px 20px;
+}
+
+.problem-item {
+	border-left: 5px solid #0d6efd;
+	border-radius: 10px;
+	padding: 25px;
+	background-color: #ffffff;
+	margin-bottom: 25px;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+}
+
+.list-group-item {
+	border-color: #f1f3f5 !important;
+	padding: 12px 15px !important;
+}
+
+.custom-navbar {
+	background-color: #ffffff;
+	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+	padding: 12px 25px;
+	z-index: 10;
+}
+
+.ide-container {
+	height: calc(100vh - 65px);
+}
+
+.left-panel {
+	height: 100%;
+	overflow-y: auto;
+	background-color: #ffffff;
+	border-right: 1px solid #e9ecef;
+	padding: 30px;
+}
+
+.right-panel {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	background-color: #f8f9fa;
+}
+
+#editor {
+	flex-grow: 1;
+	min-height: 300px;
+	border-bottom: 1px solid #e9ecef;
+}
+
+.terminal-toolbar {
+	background-color: #ffffff;
+	padding: 12px 25px;
+	border-bottom: 1px solid #1e1e2f;
+}
+
+#terminal {
+	height: 300px;
+	background-color: #1e1e2f;
+	color: #00ffcc;
+	font-family: 'Consolas', 'Courier New', monospace;
+	overflow-y: auto;
+	padding: 20px 25px;
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+.markdown-content {
+	color: #333d4b;
+	line-height: 1.8;
+	font-size: 15px;
+}
+
+.markdown-content code {
+	background-color: #f1f3f5;
+	padding: 3px 6px;
+	border-radius: 4px;
+	color: #d63384;
+	font-family: monospace;
+}
+
+.markdown-content pre code {
+	background-color: transparent;
+	color: inherit;
+}
+
+.markdown-content pre {
+	background-color: #f8f9fa;
+	padding: 15px;
+	border-radius: 8px;
+	border: 1px solid #e9ecef;
+}
+
+.editor-toolbar {
+	border-radius: 8px 8px 0 0 !important;
+	border: 1px solid #e9ecef !important;
+	background-color: #f8f9fa !important;
+}
+
+.CodeMirror {
+	border-radius: 0 0 8px 8px !important;
+	border: 1px solid #e9ecef !important;
+}

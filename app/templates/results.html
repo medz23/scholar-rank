@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Exam Results | PCLP</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="d-flex align-items-center justify-content-center min-vh-100 py-5">
+
+<div class="card p-5 text-center border-0" style="width: 100%; max-width: 650px;">
+	<h2 class="text-success fw-bold mb-2">Question Submitted!</h2>
+	<p class="text-muted fs-5 mb-4">Problem: <strong class="text-dark">{{ user_problem.problem.title }}</strong></p>
+
+	<div class="py-4 mb-5 bg-light rounded-4 border">
+		<span class="text-muted small fw-bold text-uppercase"
+					style="letter-spacing: 1px;">Your Score for this Question</span>
+		<div class="display-1 fw-bold text-dark mt-2">
+			{{ user_problem.problem_score }}<span class="fs-3 text-secondary"> / {{ user_problem.problem.weight }}</span>
+		</div>
+	</div>
+
+	<div class="card bg-white text-start border mb-5 shadow-sm">
+		<div class="card-header bg-light fw-bold text-dark py-3">
+			Test Case Breakdown
+		</div>
+		<ul class="list-group list-group-flush">
+			{% for result in user_problem.test_results %}
+			<li class="list-group-item d-flex justify-content-between align-items-center py-3">
+				<span class="text-dark">Test Case #{{ loop.index }} <small class="text-muted">({{ result.test_case.weight }} pts)</small></span>
+				{% if result.passed %}
+				<strong class="badge bg-success px-3 py-2 fs-6">PASSED</strong>
+				{% else %}
+				<strong class="badge bg-danger px-3 py-2 fs-6">FAILED</strong>
+				{% endif %}
+			</li>
+			{% endfor %}
+		</ul>
+	</div>
+
+	{% if more_pending %}
+	<a href="{{ url_for('student.ide', student_uuid=user.uuid) }}" onclick="window.__intentionalNav = true;" class="btn btn-primary btn-lg w-100 fw-bold shadow py-3">Proceed to Next
+		Question ➔</a>
+	{% else %}
+	<div class="alert bg-white border border-warning border-2 text-center p-5 mb-0 shadow-sm rounded-4">
+		<h2 class="text-warning fw-bold mb-3">Full Exam Complete</h2>
+		<p class="text-muted fs-5 mb-2">Your calculated final course grade is:</p>
+		<div class="display-3 fw-bold text-dark mb-4">{{ user.final_grade }}</div>
+		<a href="{{ url_for('auth.logout') }}" onclick="window.__intentionalNav = true;" class="btn btn-outline-secondary w-100 fw-bold py-3 mt-3 shadow-sm">Logout of
+			Portal</a>
+	</div>
+	{% endif %}
+</div>
+
+</body>
+</html>

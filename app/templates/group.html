@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Manage {{ group.name }} | PCLP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="container-fluid py-5 px-4" style="max-width: 1400px;">
+
+	<div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+		<h2 class="text-primary fw-bold m-0 d-flex align-items-center">
+			<a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary me-3 shadow-sm px-3">← Back</a>
+			Group: {{ group.name }}
+		</h2>
+		<div>
+			<a href="{{ url_for('group.export_group_csv', group_id=group.id) }}"
+				 class="btn btn-success fw-bold shadow-sm px-4">📥 Download CSV Results</a>
+		</div>
+	</div>
+
+	<div class="row g-3 mb-5">
+		<div class="col-md-6">
+			<div class="card h-100 border-primary border-opacity-25 shadow-sm">
+				<div class="card-header text-primary fw-bold bg-primary bg-opacity-10 py-2">
+					+ Add Student to {{ group.name }}
+				</div>
+				<div class="card-body p-3 d-flex align-items-center">
+					<form action="{{ url_for('group.add_student', group_id=group.id) }}" method="POST" class="d-flex w-100 gap-2">
+						<input type="text" name="username" class="form-control bg-light" placeholder="Username" required>
+						<input type="password" name="password" class="form-control bg-light" placeholder="Password" required>
+						<button type="submit" class="btn btn-primary fw-bold px-4">Add Student</button>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-6">
+			<div class="card h-100 border-info border-opacity-25 shadow-sm">
+				<div class="card-header text-info fw-bold bg-info bg-opacity-10 py-2">
+					Assign Problem to Group
+				</div>
+				<div class="card-body p-3 d-flex align-items-center">
+					<form action="{{ url_for('group.assign_problem_to_group', group_id=group.id) }}" method="POST"
+								class="d-flex w-100 gap-2">
+						<select name="problem_id" class="form-select bg-light" required>
+							<option value="" disabled selected>Select Problem...</option>
+							{% for prob in problems %}
+							<option value="{{ prob.id }}">Q{{ prob.exam_order }}: {{ prob.title }}</option>
+							{% endfor %}
+						</select>
+						<button type="submit" class="btn btn-info text-white fw-bold px-4">Assign All</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<h3 class="mb-4 text-dark fw-bold d-flex align-items-center">🎓 Enrolled Students <span
+			class="badge bg-secondary ms-3 fs-6">{{ group.students|length }}</span></h3>
+	<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
+		{% for student in group.students %}
+		<div class="col">
+			<div class="card h-100 p-2">
+				<div class="card-header pt-3 pb-0 d-flex justify-content-between align-items-center">
+					<strong class="fs-5 text-dark">{{ student.username }}</strong>
+					<div>
+						<span class="badge bg-light text-secondary border">ID: {{ student.id }}</span>
+						{% if student.strikes > 0 %}<span
+							class="badge bg-danger shadow-sm ms-1">{{ student.strikes }} Strikes</span>{% endif %}
+					</div>
+				</div>
+
+				<div class="card-body d-flex flex-column p-4">
+					<div class="text-center mb-4 bg-light rounded-3 py-4 border border-light-subtle">
+						<small class="text-muted fw-bold" style="letter-spacing: 1px;">FINAL GRADE</small>
+						<h1 class="text-success m-0 fw-bold display-5">{{ student.final_grade }}</h1>
+					</div>
+
+					<small class="text-muted mb-2 fw-bold" style="letter-spacing: 1px;">ASSIGNMENTS</small>
+					<ul class="list-group list-group-flush mb-4 rounded border">
+						{% for up in student.user_problems|sort(attribute='problem.exam_order') %}
+						<li class="list-group-item d-flex justify-content-between align-items-center bg-white">
+							<div>
+								<span class="fw-semibold text-dark">[Q{{ up.problem.exam_order }}] {{ up.problem.title }}</span><br>
+								<small class="text-muted">Score: {{ up.problem_score }}/{{ up.problem.weight }}</small>
+							</div>
+							{% if up.status == 'passed' or up.status == 'completed' %}
+							<span class="badge bg-success">Done</span>
+							{% elif up.status == 'failed' %}
+							<span class="badge bg-danger">Failed</span>
+							{% else %}
+							<span class="badge bg-warning text-dark">Pending</span>
+							{% endif %}
+						</li>
+						{% else %}
+						<li class="list-group-item bg-light text-muted text-center py-3">No assignments given.</li>
+						{% endfor %}
+					</ul>
+
+					<form action="{{ url_for('admin.assign_problem', student_id=student.id) }}" method="POST"
+								class="input-group mt-auto mb-4 shadow-sm">
+						<select name="problem_id" class="form-select bg-light" required>
+							<option value="" disabled selected>Force Assign Problem...</option>
+							{% for prob in problems %}
+							<option value="{{ prob.id }}">Q{{ prob.exam_order }}: {{ prob.title }}</option>
+							{% endfor %}
+						</select>
+						<button type="submit" class="btn btn-primary fw-bold">Assign</button>
+					</form>
+
+					<div class="d-flex justify-content-between align-items-center pt-4 border-top mt-auto">
+						<details>
+							<summary class="text-success small fw-bold" style="cursor:pointer; list-style:none;">Reset Password
+							</summary>
+							<form action="{{ url_for('admin.edit_student', student_id=student.id) }}" method="POST"
+										class="input-group input-group-sm mt-3 shadow-sm">
+								<input type="password" name="password" class="form-control bg-light" placeholder="New Password"
+											 required>
+								<button type="submit" class="btn btn-success fw-bold">Save</button>
+							</form>
+						</details>
+						<form action="{{ url_for('admin.delete_student', student_id=student.id) }}" method="POST"
+									style="display:inline;" onsubmit="return confirm('Delete {{ student.username }} completely?');">
+							<button type="submit" class="btn btn-link text-danger small fw-bold text-decoration-none p-0">Delete
+								Student
+							</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.querySelectorAll('details').forEach(detail => {
+        detail.addEventListener('toggle', function() {
+            if(this.open) { window.dispatchEvent(new Event('resize')); }
+        });
+    });
+</script>
+</body>
+</html>

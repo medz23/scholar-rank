@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Exam Complete | PCLP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="d-flex align-items-center justify-content-center vh-100">
+<div class="card p-5 text-center" style="max-width: 500px;">
+    <h2 class="text-success fw-bold mb-3">Exam Complete!</h2>
+    <p class="text-muted">You have completed all assigned problems.</p>
+    <div class="display-3 fw-bold my-4">{{ user.final_grade }}</div>
+    <a href="{{ url_for('auth.logout') }}" onclick="window.__intentionalNav = true;" class="btn btn-outline-secondary w-100 fw-bold py-3">Logout</a>
+</div>
+</body>
+</html>
