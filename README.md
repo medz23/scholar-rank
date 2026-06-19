@@ -5,18 +5,18 @@ A web-based exam platform for programming courses. Students solve Python problem
 ## Features
 
 - **Browser-based IDE** with Monaco editor and a built-in test terminal
-- **Automatic grading** — student code runs in isolated Docker containers with memory/CPU limits
-- **Two grading modes** — function-based (JSON input/output) and stdin/stdout
-- **Anti-cheat** — fullscreen enforcement, tab-switching strikes (3 strikes = exam terminated), copy/paste disabled
-- **Professor dashboard** — create problems, manage groups, add test cases, set global bonus, export CSV results
-- **Randomized problem sets** — problems with the same `exam_order` are randomly assigned (one per set per student)
+- **Automatic grading** - student code runs in isolated Docker containers with memory/CPU limits
+- **Two grading modes** - function-based (JSON input/output) and stdin/stdout
+- **Anti-cheat** - fullscreen enforcement, tab-switching strikes (3 strikes = exam terminated), copy/paste disabled
+- **Professor dashboard** - create problems, manage groups, add test cases, set global bonus, export CSV results
+- **Randomized problem sets** - problems with the same `exam_order` are randomly assigned (one per set per student)
 
 ## Prerequisites
 
 You need two things installed on your machine:
 
-1. **Docker** — [Install Docker](https://docs.docker.com/get-docker/)
-2. **Docker Compose** — included with Docker Desktop on Windows/Mac; on Linux install separately with `sudo apt install docker-compose-plugin`
+1. **Docker** - [Install Docker](https://docs.docker.com/get-docker/)
+2. **Docker Compose** - included with Docker Desktop on Windows/Mac; on Linux install separately with `sudo apt install docker-compose-plugin`
 
 Verify both are working:
 
@@ -88,18 +88,18 @@ http://<YOUR_IP>:8765/pclp/login/
 
 Use the credentials you set in `.env` (`PROFESSOR_USERNAME` / `PROFESSOR_PASSWORD`).
 
-## How to Use — Professor Workflow
+## How to Use - Professor Workflow
 
 ### Creating problems
 
 1. From the dashboard, scroll to **"Create New Problem"**
 2. Fill in:
-   - **Set / Q#** — the exam order number. Problems with the same number form a pool; each student gets one random problem from each pool.
-   - **Title** — displayed to students
-   - **Description** — supports Markdown
-   - **Start Code** — the template students see in the editor
-   - **Function Name** — if set, the grader calls this function directly. If left blank, the grader uses stdin/stdout mode.
-   - **Weight** — how many points this problem is worth in the final grade
+   - **Set / Q#** - the exam order number. Problems with the same number form a pool; each student gets one random problem from each pool.
+   - **Title** - displayed to students
+   - **Description** - supports Markdown
+   - **Start Code** - the template students see in the editor
+   - **Function Name** - if set, the grader calls this function directly. If left blank, the grader uses stdin/stdout mode.
+   - **Weight** - how many points this problem is worth in the final grade
 3. After creating a problem, expand **"Add Test Case"** to add test cases with input, expected output, point weight, and a hidden flag.
 
 ### Managing students
@@ -113,7 +113,7 @@ Use the credentials you set in `.env` (`PROFESSOR_USERNAME` / `PROFESSOR_PASSWOR
 
 - Students log in and are taken directly to their IDE
 - They can run tests as many times as they want before submitting
-- Submitting is final — it locks that problem and moves them to the next one
+- Submitting is final - it locks that problem and moves them to the next one
 - If a student switches tabs 3 times, their exam is terminated
 
 ### After the exam
@@ -177,12 +177,12 @@ docker compose restart web
 
 ## Troubleshooting
 
-**"Cannot connect to the Docker daemon"** — Make sure Docker is running. On Linux: `sudo systemctl start docker`.
+**"Cannot connect to the Docker daemon"** - Make sure Docker is running. On Linux: `sudo systemctl start docker`.
 
-**First test run is slow** — The first time a student runs code, Docker may need to pull `python:3.12-slim` (~50 MB). Run `docker pull python:3.12-slim` ahead of time to avoid this.
+**First test run is slow** - The first time a student runs code, Docker may need to pull `python:3.12-slim` (~50 MB). Run `docker pull python:3.12-slim` ahead of time to avoid this.
 
-**"Server busy" error when running tests** — The executor limits concurrent containers to 5. If many students run tests at the same time, some will get queued. They can retry after a few seconds. You can increase `MAX_CONCURRENT` in `executor.py` if your server can handle it.
+**"Server busy" error when running tests** - The executor limits concurrent containers to 5. If many students run tests at the same time, some will get queued. They can retry after a few seconds. You can increase `MAX_CONCURRENT` in `executor.py` if your server can handle it.
 
-**Port 8765 is already in use** — Change the port mapping in `docker-compose.yml` from `"8765:5000"` to something else, e.g. `"9000:5000"`.
+**Port 8765 is already in use** - Change the port mapping in `docker-compose.yml` from `"8765:5000"` to something else, e.g. `"9000:5000"`.
 
-**Database reset needed** — Run `docker compose down -v` to wipe the database volume completely, then `docker compose up --build -d` to start fresh.
+**Database reset needed** - Run `docker compose down -v` to wipe the database volume completely, then `docker compose up --build -d` to start fresh.
